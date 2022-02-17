@@ -1,0 +1,11 @@
+quarkus:
+  hibernate-orm:
+    database:
+      generation: drop-and-create
+
+mp:
+  messaging:
+    incoming:
+      wordsin:
+        connector: smallrye-kafka
+        topic: wordsin
