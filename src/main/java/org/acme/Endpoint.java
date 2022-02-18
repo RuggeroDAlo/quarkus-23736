@@ -18,12 +18,13 @@ public class Endpoint {
 
   @GET
   public Uni<Void> queryDb() {
-    logger.infof("Endpoint called");
+    logger.infof("Processing api - panache");
     return Panache.withTransaction(() ->
       personRepository
-        .findByName("name")
+        .find("id", 1L)
+        .firstResult()
         .onItem()
-        .invoke(p -> logger.info("query done"))
+        .invoke(p -> logger.info("query done - panache"))
         .replaceWithVoid()
     );
   }

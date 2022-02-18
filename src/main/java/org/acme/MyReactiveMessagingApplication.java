@@ -5,6 +5,7 @@ import io.smallrye.mutiny.Uni;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.*;
+import org.hibernate.reactive.mutiny.Mutiny;
 import org.jboss.logging.Logger;
 
 @ApplicationScoped
@@ -16,14 +17,30 @@ public class MyReactiveMessagingApplication {
   @Inject
   PersonRepository personRepository;
 
-  @Incoming("wordsin")
-  public Uni<Void> queryDb(String object) {
-    logger.infof("Processing message");
+  @Inject
+  Mutiny.SessionFactory sessionFactory;
+
+  @Incoming("wordsin-panache")
+  public Uni<Void> queryDb(String message) {
+    logger.infof("Processing message - panache - %s", message);
     return Panache.withTransaction(() ->
       personRepository
-        .findByName("name")
+        .find("id", 1L)
+        .firstResult()
         .onItem()
-        .invoke(p -> logger.info("query done"))
+        .invoke(p -> logger.info("query done - panache"))
+        .replaceWithVoid()
+    );
+  }
+
+  @Incoming("wordsin-hibernate")
+  public Uni<Void> queryDbReactive(String message) {
+    logger.infof("Processing message - hibernate - %s", message);
+    return sessionFactory.withTransaction((session, transaction) ->
+      session
+        .find(Person.class, 1L)
+        .onItem()
+        .invoke(p -> logger.info("query done - hibernate"))
         .replaceWithVoid()
     );
   }

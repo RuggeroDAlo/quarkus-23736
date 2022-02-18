@@ -6,6 +6,9 @@ quarkus:
 mp:
   messaging:
     incoming:
-      wordsin:
+      wordsin-panache:
         connector: smallrye-kafka
-        topic: wordsin
+        topic: wordsin-panache
+      wordsin-hibernate:
+        connector: smallrye-kafka
+        topic: wordsin-hibernate
